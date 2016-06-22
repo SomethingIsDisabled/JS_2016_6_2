@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>pageButton</title>
+  <link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+  <script src="js/jquery-1.11.3.js"></script>
+</head>
+<body>
+<div class="text-center" id="listPage"></div>
+<script>
+
+  var allPage;//获取总页数
+  var listsCount;
+  var selectedValue;
+  var firstPageBtn = '<li onclick="firstPage()" style="cursor:pointer;"><a>1...</a></li>';
+  var prevPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="prevPage"><a>上一页</a></li>';
+  var nextPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="nextPage"><a>下一页</a></li>';
+  //var lastPageBtn='<li onclick="lastPage(51)" style="cursor:pointer;"><a>'+allPage+'</a></li>';
+  //根据总条数生成按钮
+  function createButton(num) {
+    if (num) {
+      allPage = num = Math.ceil(Number(num) / 20);
+      var btnNum = num > 11 ? 11 : num;
+      var buttons = '<ul class="pagination"><li class="active"><a class="current">1</a></li>';
+      if (btnNum > 1) {
+        for (var i = 0; i < btnNum - 1; i++) {
+          buttons += '<li onclick="liClick()" style="cursor:pointer;"><a>' + (i + 2) + '</a></li>';
+        }
+      }
+      if (num >= 2) {
+        buttons += nextPageBtn
+      }
+      if (num > 11) {
+        buttons += '<li onclick="lastPage(allPage)" style="cursor:pointer;"><a>' + num + '</a></li>'
+      }
+      buttons += '</ul>';
+      $("#listPage").html(buttons);
+    }
+  }
+
+  //后添加按钮组(传入个数)
+  function addAfter(addNum) {
+    var nowMax = parseInt($("#nextPage").prev().text());//获取11目前最大值
+    var addButtons = '';
+    for (var i = 0; i < addNum; i++, nowMax++) {
+      addButtons += '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowMax + 1) + '</a></li>';
+    }
+    $("#nextPage").before(addButtons);
+  }
+
+  //后移除
+  function removeAfter(removeNum) {
+    for (var i = 0; i < removeNum; i++) {
+      $("#nextPage").prev().remove();
+    }
+  }
+
+  //前移除按钮方法(传入个数)
+  function removeBefore(removeNum) {
+    for (var i = 0; i < removeNum; i++) {
+      $("#prevPage").next().remove();
+    }
+  }
+
+  //前增加
+  function addBefore(addNum) {
+    var nowMin = parseInt($("#prevPage").next().text());
+    var addButtons = '';
+    for (var i = 0; i < addNum; i++, nowMin--) {
+      addButtons = '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowMin - 1) + '</a></li>' + addButtons;
+    }
+    $("#prevPage").after(addButtons);
+  }
+
+  createButton(511);
+  //点击加载分页
+  function liClick(e) {
+    e = e || window.event;
+    var target = e.target || e.srcElement;
+    //console.log($(target));
+    var oldCurrentNum = $("#listPage .current").text();
+    //点击元素文本为数字，更换点击元素的样式
+    if (target.innerHTML >>> 0 != 0) {
+      $("#listPage .current").removeClass("current").parent().removeClass("active").attr("onclick", "liClick()").css("cursor", "pointer");
+      $(target).addClass("current").parent().addClass("active").removeAttr("onclick");
+      //文本为下一页
+    } else if (target.innerHTML == "下一页" && $("#listPage .current").text() < allPage) {
+      $("#listPage .current").removeClass("current").parent().removeClass("active").attr("onclick", "liClick()").css("cursor", "pointer")
+        .next().addClass("active").removeAttr("onclick").children().addClass("current");
+      //文本为上一页
+    } else if (target.innerHTML == "上一页" && $("#listPage .current").text() > 1) {
+      $("#listPage .current").removeClass("current").parent().removeClass("active").attr("onclick", "liClick()").css("cursor", "pointer")
+        .prev().addClass("active").removeAttr("onclick").children().addClass("current");
+    }
+    //选中文本非1，增加一个上一页按钮
+    if ($("#listPage .current").text() != 1 && !$("#prevPage").length) {
+      $("#listPage ul").prepend(prevPageBtn);
+    }
+
+    //获取增加按钮的值
+    var buttonChangeNum;
+    var currentNum = $("#listPage .current").text();
+    var minNum = $("#prevPage").length ? $("#prevPage").next().text() : $("#listPage ul li:first-child").text();
+    var maxNum = $("#nextPage").prev().text();
+
+    //**两个临界点处理：临界点1:---左侧小于1+5(currentNum-1<5)；临界点2：--右侧总数总数量小于allPage-5(allPage-currentNum<5)
+    //左右按钮变化值即为差值(currentNum-minNum-5)
+//    if(currentNum-1<5){buttonChangeNum=1-minNum}
+//    else if(allPage-currentNum<5){buttonChangeNum=allPage-maxNum}else{buttonChangeNum=currentNum-minNum-5}
+    buttonChangeNum = currentNum - 1 < 5 ? 1 - minNum : allPage - currentNum < 5 ? allPage - maxNum : currentNum - minNum - 5;
+    //当buttonChangeNum为正数(即向右取更大页码时)，左侧移除多余按钮,右侧补全不足按钮
+    if (buttonChangeNum > 0) {
+      removeBefore(buttonChangeNum);
+      addAfter(buttonChangeNum);
+      //当leftNum为负数(即向左取更小页码时)，左侧补全页码，右侧删除页码
+    } else if (buttonChangeNum < 0) {
+      addBefore(Math.abs(buttonChangeNum));
+      removeAfter(Math.abs(buttonChangeNum));
+    }
+//    console.log("cur:" + currentNum, "all:" + allPage, "min:" + minNum, "max:" + maxNum);
+//    console.log("moved:" + buttonChangeNum);
+    var nowMinNum = $("#prevPage").length ? $("#prevPage").next().text() : $("#listPage ul li:first-child").text();
+    var nowMaxNum = $("#nextPage").prev().text();
+    if (nowMinNum > 1 && !$("#prevPage").prev().length) {
+      $("#prevPage").before(firstPageBtn);
+    } else if (nowMinNum == 1 && $("#prevPage").prev().length) {
+      $("#prevPage").prev().remove();
+    }
+    if (nowMaxNum == allPage && $("#nextPage").next().length) {
+      $("#nextPage").next().remove();
+    } else if (nowMaxNum < allPage && !$("#nextPage").next().length) {
+      var lastPageBtn = '<li onclick="lastPage(allPage)" style="cursor:pointer;"><a>' + allPage + '</a></li>';
+      $("#nextPage").after(lastPageBtn);
+    }
+  }
+
+  //点击尾页
+  function lastPage(allPage) {
+    var buttons = '</ul>';
+    buttons = nextPageBtn + buttons;
+    buttons = '<li class="active"><span class="current">' + allPage + '</span></li>' + buttons;
+    for (var i = allPage, nowPage = allPage; i > allPage - 10; i--, nowPage--) {
+      buttons = '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowPage - 1) + '</a></li>' + buttons;
+    }
+    buttons = prevPageBtn + buttons;
+    buttons = firstPageBtn + buttons;
+    buttons = '<ul class="pagination">' + buttons;
+    $("#listPage").html(buttons);
+  }
+
+  //点击首页
+  function firstPage() {
+    if (listsCount)createButton(listsCount);
+  }
+
+</script>
+</body>
+</html>
