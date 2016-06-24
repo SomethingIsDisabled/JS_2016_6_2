@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>repeatFinished</title>
+  <script src="../js/angular.min.js"></script>
+ </head>
+ <body ng-app="M1">
+  <div>
+    <ul ng-controller="C1">
+	  <li ng-repeat="n in arr" repeat-finished>
+	    <p>{{n.name}} &nbsp; {{n.rank}}</p>
+	  </li>
+	</ul>
+  </div>
+  <script>
+    var app=angular.module('M1',[]);
+    app.controller("C1",function($scope){
+	  $scope.arr=[
+	    {"name":"Tom","rank":"1","age":"12"},
+	    {"name":"Tom1","rank":"2","age":"16"},
+	    {"name":"Tom2","rank":"3","age":"14"},
+	    {"name":"Tom3","rank":"4","age":"15"},
+	    {"name":"Tom4","rank":"5","age":"12"},
+	    {"name":"Tom5","rank":"6","age":"19"},
+	    {"name":"Tom6","rank":"7","age":"11"},
+	    {"name":"Tom7","rank":"8","age":"12"}
+	  ];
+	})
+	app.directive("repeatFinished",function(){
+		return {
+			restrict:"A",
+			link:function(scope,element,attr){
+			if(scope.$last===true){
+				console.log(scope.$last);
+			    element.ready(function(){
+					console.log("calling:"+attr.repeatFinished);
+					});
+			 }else{console.log(scope.$last===true);}
+			}
+		} 
+	})
+  </script>
+ </body>
+</html>

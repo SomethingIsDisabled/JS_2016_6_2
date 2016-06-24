@@ -9,73 +9,66 @@
 <body>
 <div class="text-center" id="listPage"></div>
 <script>
-
-  var allPage;//获取总页数
-  var listsCount;
-  var selectedValue;
-  var firstPageBtn = '<li onclick="firstPage()" style="cursor:pointer;"><a>1...</a></li>';
-  var prevPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="prevPage"><a>上一页</a></li>';
-  var nextPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="nextPage"><a>下一页</a></li>';
-  //var lastPageBtn='<li onclick="lastPage(51)" style="cursor:pointer;"><a>'+allPage+'</a></li>';
+function CreatePageButton(idString,totalItems,pageListItems,viewButton){
+console.log(this.firstPageBtn);
+  this.allPage=0;
+  idString="#listPage"||"#"+idString;
+  this.firstPageBtn='<li onclick="firstPage()" style="cursor:pointer;"><a>1...</a></li>';
+  this.prevPageBtn= '<li onclick="liClick()" style="cursor:pointer;" id="'+idString.slice(1)+"Prev"+'"><a>上一页</a></li>';
+  this.nextPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="'+idString.slice(1)+"Next"+'"><a>下一页</a></li>';
   //根据总条数生成按钮
-  function createButton(num) {
-    if (num) {
-      allPage = num = Math.ceil(Number(num) / 20);
-      var btnNum = num > 11 ? 11 : num;
+  this.createButtons=function (idString,totalItems,pageListItems,viewButton) {
+    if (totalItems) {
+      this.allPage = Math.ceil(Number(totalItems) / pageListItems);
+      var btnNum = this.allPage > viewButton ? viewButton : this.allPage;
       var buttons = '<ul class="pagination"><li class="active"><a class="current">1</a></li>';
       if (btnNum > 1) {
         for (var i = 0; i < btnNum - 1; i++) {
           buttons += '<li onclick="liClick()" style="cursor:pointer;"><a>' + (i + 2) + '</a></li>';
         }
+        buttons += this.nextPageBtn;
       }
-      if (num >= 2) {
-        buttons += nextPageBtn
-      }
-      if (num > 11) {
-        buttons += '<li onclick="lastPage(allPage)" style="cursor:pointer;"><a>' + num + '</a></li>'
+      if (this.allPage > viewButton) {
+        buttons += '<li onclick="lastPage(this.allPage)" style="cursor:pointer;"><a>' + this.allPage + '</a></li>'
       }
       buttons += '</ul>';
-      $("#listPage").html(buttons);
+      $(idString).html(buttons);
     }
-  }
-
+  };
+  this.createButtons(idString,totalItems,pageListItems,viewButton);
   //后添加按钮组(传入个数)
-  function addAfter(addNum) {
-    var nowMax = parseInt($("#nextPage").prev().text());//获取11目前最大值
+  this.addAfter=function (addNum) {
+    var nowMax = parseInt($(idString+"Next").prev().text());
+    console.log(idString+"Next",nowMax);
     var addButtons = '';
     for (var i = 0; i < addNum; i++, nowMax++) {
       addButtons += '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowMax + 1) + '</a></li>';
     }
-    $("#nextPage").before(addButtons);
+    $(idString+"Next").before(addButtons);
   }
-
   //后移除
-  function removeAfter(removeNum) {
+  this.removeAfter=function (removeNum) {
     for (var i = 0; i < removeNum; i++) {
-      $("#nextPage").prev().remove();
+      $(idString+"Next").prev().remove();
     }
-  }
-
+  };
   //前移除按钮方法(传入个数)
-  function removeBefore(removeNum) {
+  this.removeBefore=function (removeNum) {
     for (var i = 0; i < removeNum; i++) {
-      $("#prevPage").next().remove();
+      $(idString+"Prev").next().remove();
     }
-  }
-
+  };
   //前增加
-  function addBefore(addNum) {
-    var nowMin = parseInt($("#prevPage").next().text());
+  this.addBefore=function (addNum) {
+    var nowMin = parseInt($(idString+"Prev").next().text());
     var addButtons = '';
     for (var i = 0; i < addNum; i++, nowMin--) {
       addButtons = '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowMin - 1) + '</a></li>' + addButtons;
     }
-    $("#prevPage").after(addButtons);
-  }
-
-  createButton(511);
-  //点击加载分页
-  function liClick(e) {
+    $(idString+"Prev").after(addButtons);
+  };
+//点击加载分页
+  this.liClick=function (e) {
     e = e || window.event;
     var target = e.target || e.srcElement;
     //console.log($(target));
@@ -134,26 +127,17 @@
       $("#nextPage").after(lastPageBtn);
     }
   }
-
-  //点击尾页
-  function lastPage(allPage) {
-    var buttons = '</ul>';
-    buttons = nextPageBtn + buttons;
-    buttons = '<li class="active"><span class="current">' + allPage + '</span></li>' + buttons;
-    for (var i = allPage, nowPage = allPage; i > allPage - 10; i--, nowPage--) {
-      buttons = '<li onclick="liClick()" style="cursor:pointer;"><a>' + (nowPage - 1) + '</a></li>' + buttons;
-    }
-    buttons = prevPageBtn + buttons;
-    buttons = firstPageBtn + buttons;
-    buttons = '<ul class="pagination">' + buttons;
-    $("#listPage").html(buttons);
+  this.liClick=function(){
+    console.log(6);
   }
+  console.log(arguments.callee);
+}
+//CreatePageButton.prototype.firstPageBtn='<li onclick="firstPage()" style="cursor:pointer;"><a>1...</a></li>';
+//CreatePageButton.prototype.prevPageBtn= '<li onclick="liClick()" style="cursor:pointer;" id="prevPage"><a>上一页</a></li>';
+//CreatePageButton.prototype.nextPageBtn = '<li onclick="liClick()" style="cursor:pointer;" id="nextPage"><a>下一页</a></li>';
 
-  //点击首页
-  function firstPage() {
-    if (listsCount)createButton(listsCount);
-  }
-
+var a=new CreatePageButton("listPage",33,2,3);
+console.log(a);
 </script>
 </body>
 </html>
