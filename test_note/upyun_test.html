@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>又拍云请求</title>
+  <script src="js/jquery-1.11.3.js"></script>
+  <script src="js/base64.js"></script>
+ </head>
+ <body>
+  <div id="response"></div>
+  <button type="button" onclick="getMessage()">请求</button>
+  <script>
+  var auth="yanghaojinrongyanghaojinrong123";
+  var bAuth=encode64(auth);
+  console.log(bAuth);
+  function getMessage(){
+    $.ajax({
+	  url:'http://v0.api.upyun.com/upload/2016-06-30/test/img_1@2x.png',
+	  success:function(data){
+	  console.log(data)
+	  },
+	  fail:function(data){
+	  console.log(data);
+	  console.log("fail");
+	  }
+	});
+	$.get('curl -u http://v0.api.upyun.com/upload/2016-06-30/test/img_1@2x.png\-H "Authorization: Basic eWFuZ2hhb2ppbnJvbmd5YW5naGFvamlucm9uZzEyMw=="',function(data){console.log(data);console.log(2)});
+  }
+  </script>
+ </body>
+</html>

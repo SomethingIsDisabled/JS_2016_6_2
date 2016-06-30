@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+ </head>
+ <body>
+  <form action="getFile.php" name="path" method="post" enctype="multipart/form-data">
+    <input type="text" name="text" value="Some"/>
+    <input id="file" type="file" name="file"/><br>
+    <input type="submit"/>
+  </form>
+  <script>
+    function getPath(){
+	  var path=document.getElementById("file").value;
+	  console.log(path);
+	}
+  </script>
+ </body>
+</html>
