@@ -11,6 +11,10 @@
   echo "<br>";
   print_r($_POST['file']);
   echo "<br>";
+  //$str="sadhfjaheufha";
+  //$str2=explode($str);
+  //print_r($str2);
+  //echo "<br>";
   if($_FILES["file"]["error"]>0){
    echo "Error:".$_FILES["file"]["error"]."<br>";
   }else{
