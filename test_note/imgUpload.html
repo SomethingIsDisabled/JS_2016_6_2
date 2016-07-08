@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>imageUpload</title>
+  <script src="js/jquery-1.11.3.js"></script>
+  <style>
+    #imgreview{
+	  width:100px;
+	  height:100px;
+	  background:#ddd;
+	}
+  </style>
+ </head>
+ <body>
+  <div>
+    <label for="picture">图片地址</label>
+	<input type="text" id="text"/>
+    <input type="file" id="picture"/>
+	<div id="imgreview"></div>
+  </div>
+  <script>
+    var url=window.location.href;
+	console.log(url);
+	//兼容性读取函数：
+	function getFullPath(obj){ 
+      if(obj) {
+       //ie 
+       if (window.navigator.userAgent.indexOf("MSIE")>=1){
+        bj.select(); 
+        return document.selection.createRange().text; 
+       } 
+       //firefox 
+       else if(window.navigator.userAgent.indexOf("Firefox")>=1){ 
+          if(obj.files){ 
+             return obj.files.item(0).getAsDataURL(); 
+           } 
+            return obj.value; 
+        } 
+        return obj.value; 
+       } 
+    } 
+	var picture=document.getElementById('picture');
+	var text=document.getElementById('text');
+	//尝试document.selection
+	text.oninput=function(){
+		console.log(document.selection.createRange());
+	}
+	picture.onchange=function(){
+	  console.log(picture.value);//可以读取但地址不对C:\fakepath\5750f6f45b4fa.png
+	  //picture.value=getFullPath(this);//无法赋值(file形式的input为只读)
+	  console.log(getFullPath(this));//获取结果相同
+	  console.log(document.getElementById('picture').file);//无效
+	  //console.log(picture.value);
+
+	  //方法二selection：
+      if(window.navigator.userAgent.toLowerCase().indexOf('trident')==-1){
+		alert('只支持部分IE');
+	  }else{
+		var selection=document.selection.createRange();
+	  };
+	  var file_upl = document.getElementById('picture'); file_upl.select(); 
+	  var realpath = selection.text;
+	  console.log(realpath);
+	}
+		  
+  </script>
+ </body>
+</html>
