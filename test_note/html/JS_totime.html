@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>JS时间戳转化为时间</title>
+ </head>
+ <body>
+  <script>
+    //方法一：
+    function getLocalTime1(nS) {
+      return new Date(parseInt(nS)*1000).toLocaleString().replace(/:\d{1,2}$/,'');
+	  //return new Date(parseInt(nS) * 1000).toLocaleString().substr(0,17)}
+    }
+	//正则解析：\d{1,2}匹配数字,至少一次，之多两次；此处就是去掉秒
+    console.log('方法一：',getLocalTime1(1293072805));//2010/12/23 上午10:53 
+
+	//方法二
+    function getLocalTime2(nS) {     
+       return new Date(parseInt(nS) * 1000).toLocaleString().replace(/年|月|\//g, "-").replace(/日/g, "");
+    }
+	console.log('方法二：',getLocalTime2(1293072805));
+
+	//方法三：
+	function formatDate3(now){
+        var year=now.getFullYear();
+        var month=now.getMonth()+1;
+        var date=now.getDate();
+        var hour=now.getHours();
+        var minute=now.getMinutes();
+        var second=now.getSeconds();
+        return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
+    }
+    var d=new Date(1230999938000);
+    console.log(formatDate3(d));
+  </script>
+ </body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>刷新和关闭</title>
+ </head>
+ <body>
+ <button type="submit" onclick="valiEvent()">提交</button>
+  <script>
+  window.onbeforeunload=function(event){
+    var c = event || window.event;
+    if (/webkit/.test(navigator.userAgent.toLowerCase())) {
+      return "离开页面将导致数据丢失！";
+    }else{
+      c.returnValue = "离开页面将导致数据丢失！";
+    }
+  };
+  function valiEvent(e){
+	  var e=e||window.event;
+	  return "ccc";
+  }
+  </script>
+ </body>
+</html>

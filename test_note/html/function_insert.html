@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <title>function嵌套</title>
+ </head>
+ <body>
+  <script>
+    function a(fun){
+		var aa=333;
+		if(fun){fun()}
+	    console.log(aa);
+	}
+	function b(){
+	  aa=aa+44;
+	}
+	a(b());
+  </script>
+ </body>
+</html>

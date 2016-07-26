@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>form快捷通道</title>
+ </head>
+ <body>
+  <form name="form1" id="form1">
+    <input type="text" value="111" name="username"/>
+    <input type="text" value="第二个username" name="username"/>
+  </form>
+  <form name="form2" id="form2">
+    <input type="text" value="222" name=""/>
+	<input type="checkbox" name="ck" onclick="getValue()" />c1
+	<input type="checkbox" name="ck" onclick="getValue()"/>c2
+  </form>
+  <form name="form3" id="form3">
+    <input type="text" value="333"/>
+	<select name="s1">
+	  <option value="4441">444</option>
+	  <option value="4442">442</option>
+	  <option value="4443" selected="selected">443</option>
+	  <option value="4444">444</option>
+	</select>
+  </form>
+  <script>
+   var form_test1=document.forms;
+   console.log(form_test1);
+   var form_test2=document.forms[0];
+   console.log(form_test2);
+   //连贯操作
+   var form_test3=document.forms['form1'];
+   console.info(form_test3.username[1].value," 长度：",form_test3.username.length);
+   //checkbox
+   var form_test4=document.forms[1];
+   form_test4.ck[1].checked=true;
+   console.log(form_test4);
+   function getValue(){
+	   console.log("第一个",form_test4.ck[0].value);
+	   console.log("第二个",form_test4.ck[1].value);
+   }
+   
+   var form_test5=document.forms[2].s1.value;
+   console.log(form_test5);
+  </script>
+ </body>
+</html>
