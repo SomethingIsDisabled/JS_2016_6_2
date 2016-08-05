@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" ng-app="M1">
+ <head>
+  <meta charset="UTF-8">
+  <title>angularJS Send files</title>
+  <script src="../js/angular.min.js"></script>
+ </head>
+ <body>
+ <div ng-controller="C1">
+   <input type="file" name="sfz_x" id="sfz_x"/>
+   <input type="file" name="sfz_y" id="sfz_y"/>
+   <input type="button" value="提交" ng-click="sendFiles()"/>
+ </div>
+
+
+  <script>
+    var app=angular.module("M1",[]);
+	app.controller('C1',function($scope,$http){
+	  $scope.testIn="start:";
+	  console.log($scope.testIn);
+      $scope.sendFiles=function(){
+	$http({
+	  method:'post',
+      url:'http://127.0.0.4/JS_2016_6_2/test_note/php/receive_files.php',
+      headers:{'Content-Type':undefined},
+      data:{sfz_x:document.getElementById('sfz_x').files[0],sfz_y:document.getElementById('sfz_y').files[0],problemType:'3'},
+      transformRequest:function(data,headersGetter){
+        var formData=new FormData();
+        angular.forEach(data,function(value,key){
+          formData.append(key,value); 
+        });
+        return formData;
+      },
+      timeout:3000
+    }).then(function(success){console.log(success.data)},function(error){
+      console.log(error);
+    })
+	  }
+	})
+  </script>
+ </body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>angularjs(金网安泰接口)</title>
+  <script src="../js/angular.min.js"></script>
+ </head>
+ <body ng-app="M1">
+  <div ng-controller="C1"></div>
+
+
+
+  <script>
+    var app=angular.module('M1',[]);
+	app.controller('C1',function($scope,$http){
+	  $scope.a1="ccc";
+	  $scope.data= '<?xml version="1.0" encoding="gb2312" ?>'+
+    '<GNNT>'+
+    '<REQ name="logon">'+
+    '<LOGONTYPE>pc</LOGONTYPE>'+
+    '<PASSWORD>n13818001302</PASSWORD>'+
+    '<REGISTER_WORD></REGISTER_WORD>'+
+    '<USER_ID>cn03610000032</USER_ID>'+
+    '<VERSIONINFO></VERSIONINFO>'+
+    '</REQ>'+
+    '</GNNT>';
+	  console.log($scope.a1);
+	  $http({
+	    url:'http://127.0.0.3/Appapi/Xiaoyueyue/test',
+		method:'post',
+		params:{'url':'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data}
+	  }).then(function(success){
+	    console.log(success.data);
+	  },function(error){})
+	})
+  </script>
+ </body>
+</html>

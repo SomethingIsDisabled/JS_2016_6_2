@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>JS判断非空</title>
+ </head>
+ <body>
+  <script>
+    //首先打印一些直接量的判断
+    console.log('空字符串:',Boolean(''));
+    console.log('零:',Boolean(0));
+    console.log('字符串0:',Boolean('0'));
+    console.log('空格:',Boolean(' '));
+    console.log('undefined:',Boolean(undefined));
+    console.log('null:',Boolean(null));
+	console.log('空数组',Boolean([]));
+    console.log('空对象:',Boolean({}));
+	//判断非空
+    //判断空对象
+    function isEmptyObject(arr){
+	  for(var key in arr)return !1;
+	  return !0
+	}
+	console.log('判断空对象:',isEmptyObject({}));
+	console.log('判断空对象:',isEmptyObject({'a':2}));
+	console.log('对象的长度:',{'a':2}.length);
+	console.log('对象索引:',{'a':2}['a']);
+	//判断空数组
+	var arr=[];
+	arr['a']=2;
+    console.log('判断空数组:',isEmptyObject([]));
+    console.log('判断空数组:',isEmptyObject(arr));
+    console.log('数组长度:',arr.length);
+    console.log('数组索引读取:',arr['a']);
+  </script>
+ </body>
+</html>

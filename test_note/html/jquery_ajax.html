@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>ajax(金网安泰接口)</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+ </head>
+ <body>
+  <script>
+    var data= '<?xml version="1.0" encoding="gb2312" ?>'+
+    '<GNNT>'+
+    '<REQ name="logon">'+
+    '<LOGONTYPE>pc</LOGONTYPE>'+
+    '<PASSWORD>n13818001302</PASSWORD>'+
+    '<REGISTER_WORD></REGISTER_WORD>'+
+    '<USER_ID>cn03610000032</USER_ID>'+
+    '<VERSIONINFO></VERSIONINFO>'+
+    '</REQ>'+
+    '</GNNT>';
+    console.log(data);
+	function phpSend(){
+	   $.ajax({
+	    method:'post',
+	    url:'http://127.0.0.3/Appapi/Xiaoyueyue/test',
+        data:{url:'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet',data:data},
+	    success:function(result){
+	      console.log(result);
+	    },
+        error:function(error){
+	      console.log('error',error);
+	    }
+	  });
+	}
+
+	//直接发
+	function sendImmediately(){
+	  $.ajax({
+	    method:'post',
+	    url:'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet',
+        data:data,
+	    success:function(result){
+	      console.log(result);
+	    },
+        error:function(error){
+	      console.log('error',error);
+	    }
+	  })
+	}
+	
+  </script>
+ </body>
+</html>

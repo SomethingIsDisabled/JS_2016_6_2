@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <title>Document</title>
+ </head>
+ <body>
+  <script>
+  var obj={'time':'2153653753'};
+  function toTime(guandian){
+    guandian.time=new Date(guandian.time*1000);
+    //var year=guandian.time.getFullYear();
+    var month=guandian.time.getMonth()+1;
+    var date=guandian.time.getDate();
+    var hour=guandian.time.getHours();
+    var minute=guandian.time.getMinutes();
+    if(minute<10){minute='0'+minute}
+    //var second=guandian.time.getSeconds();
+    guandian.time = month+"-"+date+" "+hour+":"+minute;
+	console.log(guandian.time);
+  };
+  console.log(obj.time);
+  console.log(new Date(obj.time*1000));
+  toTime(obj);
+
+  </script>
+ </body>
+</html>
