@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>files样式“更改”</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+  <style>
+  /* 方法一：透明覆盖 */
+  .file-box{ position:relative;width:340px} 
+  .txt{ height:22px; border:1px solid #cdcdcd; width:180px;} 
+  .btn{ background-color:#FFF; border:1px solid #CDCDCD;height:24px; width:70px;} 
+  .file{ position:absolute; top:0; right:80px; height:24px; filter:alpha(opacity:0);opacity: 0;width:260px } </style>
+ </head>
+ <body>
+  <div class="file-box"> 
+    <form action="" method="post" enctype="multipart/form-data"> 
+      <input type='text' name='textfield' id='textfield' class='txt' /> 
+      <input type='button' class='btn' value='浏览...' /> 
+      <input type="file" name="fileField" class="file" id="fileField" size="28" onchange="document.getElementById('textfield').value=this.value" /> 
+      <input type="submit" name="submit" class="btn" value="上传" /> 
+    </form> 
+  </div> 
+  <!-- 方法二：通过JS连接file控件 -->
+  <input id="lefile" type="file" style="display:none">
+<div class="input-append" style="margin-top:25px;">
+   <input id="photoCover" class="input-large" type="text">
+   <a class="btn" onclick="$('input[id=lefile]').click();">浏览</a>
+</div>
+
+  <script>
+   $('input[id=lefile]').change(function() {
+     $('#photoCover').val($(this).val());
+   });
+  </script>
+ </body>
+</html>

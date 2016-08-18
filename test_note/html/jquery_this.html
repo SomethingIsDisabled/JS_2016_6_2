@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+  <style>
+    #d1{
+	  height:600px;
+	  width:800px;
+	}
+	div{border:1px solid black;}
+	#d1 div{margin:50px;}
+	#d1>div{
+	height:500px;
+	width:700px;
+	}
+  </style>
+ </head>
+ <body>
+  <div id="d1" >
+    <div>
+	  <div>
+	    <div>
+		  <p id="p1" onclick="onclickF()">点击</p>
+		</div>
+	  </div>
+	</div>
+    <div></div>
+    <div></div>
+  </div>
+  <script>
+    $("#p1").click(function(){
+	  console.log("原生this",this,typeof this);
+	  console.log("jquery_this",$(this),typeof $(this));
+	  $(this).css("background-color","lightblue");
+	})
+	function onclickF(){
+	  console.log("onclick");
+	  console.log("onclick原生this",this);
+	  console.log("onclick_jquery_this",$(this));
+	  $(this).css("background-color","blue");
+	}
+  </script>
+ </body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>angular_get_img_height</title>
+  <script src="../js/angular.min.js"></script>
+ </head>
+ <body ng-app="M1">
+   <div ng-controller="C1">
+     <div element-resize id="imgBox" style="position:fixed"><img src="../images/QQ图片20160420143903.jpg" style="width:100%;"/></div>
+	 <div style="style=position:fixed;height:200px;background:red;" id="d2" elheightresize onresize="d2re()" onclick="d2re()"></div>
+   </div>
+  <script>
+    var app=angular.module("M1",[]);
+	app.directive("elementResize",function($window){
+		//看不懂
+		return function(scope,element){
+		  var w=angular.element(document.getElementById("imgBox"));
+		  console.log(typeof w,w);//w为元素对象，第一个元素是div
+		  //console.log(w.css());
+		  var el=document.getElementById("imgBox")
+	      scope.getEA=function(){
+		    return {
+			  "h":w.css('height'),
+			  "w":window.getComputedStyle(el).width
+			}
+		  }
+		  scope.$watch(scope.getEA,function(newValue,oldValue){
+			  console.log("ccc");
+		    scope.divHeight=newValue.h;
+			scope.divWidth=newValue.w;
+
+			scope.style=function(){
+			  return {
+			    'height': (newValue.h - 100) + 'px',
+				'width': (newValue.w - 100) + 'px'
+			  }
+			}
+		  },true)
+		  w[0].onresize=function(){
+		    console.log(1);
+		  }
+		  w.bind("resize",function(){
+			  console.log("bbb");
+		    scope.$apply();
+		  });
+		}
+	});
+	//-----------------------------------------------
+	app.directive('elheightresize', ['$window', function($window) {
+    return {
+        link: function(scope, elem, attrs) {
+			var d2 = document.getElementById('d2');
+            scope.onResize = function() {
+                
+                elem.windowHeight = $window.innerHeight - d2.clientHeight;
+                //$(elem).height(elem.windowHeight);
+				console.log(elem.windowHeight,$window.innerHeight,d2.clientHeight);
+				console.log(angular.element(d2))
+            }
+            angular.element($window).bind('resize', scope.onResize);
+        }
+    }
+    }])
+	//-------------------------------------------------
+	app.controller("C1",function($scope,$interval){
+	  console.log($scope.divHeight);
+	  $scope.imgdiv=angular.element(document.getElementById("imgBox"));
+      $scope.imgdiv.bind('resize',function(){console.log("ttt")});
+	  console.log($scope.imgdiv.css("0:clientHeight"));//不写参数报错，写参数无值
+	  $scope.bbb=function(){console.log("bbb")}
+	  //watch的用法示范
+	  $scope.num=1;
+	  //$interval(function(){$scope.num++;console.log("+")},2000);
+	  $scope.$watch('num',function(newValue, oldValue){
+		  console.log($scope.num,newValue,oldValue);
+		  })
+	})
+
+	//原生
+	var d2 = document.getElementById('d2');
+	function d2re(){console.log("d2resize")}
+	//div好像不能触发onresize,但是window可以
+	d2.onresize=d2re;
+
+  </script>
+ </body>
+</html>

@@ -25,13 +25,75 @@
     '</REQ>'+
     '</GNNT>';
 	  console.log($scope.a1);
-	  $http({
-	    url:'http://127.0.0.3/Appapi/Xiaoyueyue/test',
-		method:'post',
-		params:{'url':'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data}
-	  }).then(function(success){
-	    console.log(success.data);
-	  },function(error){})
+	  
+	 $scope.data2 = '<?xml version="1.0" encoding="gb2312" ?>'+
+            '<GNNT>'+
+            '<REQ name="sys_time_query">'+
+            '<USER_ID>cn03610000042</USER_ID>'+
+            '<LAST_ID>0</LAST_ID>'+
+            '<TD_CNT>-1</TD_CNT>'+
+            ' <SESSION_ID>3034050180239586800</SESSION_ID>'+
+            ' <CU_LG>1</CU_LG>'+
+            ' <UT>0</UT>'+
+            ' <LAST_TRADE_ID>0</LAST_TRADE_ID>'+
+            '</REQ>'+
+            '</GNNT>';
+	  $scope.header=[];
+	  $scope.header["Cookie"]="424324";
+	  $scope.header["mycookie"]="dewjdhwe";
+	  $scope.header2='["Cookie:424324","mycookie:dewjdhwe"]';
+	  console.log($scope.header,$scope.header2);
+       $scope.login = function(){
+        var loginXml = '<?xml version="1.0" encoding="gb2312" ?>'+
+            '<GNNT>'+
+            '<REQ name="logon">'+
+            '<LOGONTYPE>pc</LOGONTYPE>'+
+            '<PASSWORD>'+$scope.password+'</PASSWORD>'+
+            '<REGISTER_WORD></REGISTER_WORD>'+
+            '<USER_ID>'+$scope.account+'</USER_ID>'+
+            '<VERSIONINFO></VERSIONINFO>'+
+            '</REQ>'+
+            '</GNNT>';
+			
+		$http({
+	        url:'http://127.0.0.3/Appapi/Deal/deal',
+		    method:'post',
+		    params:{'url':'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data}
+	      }).then(function(success){
+	        console.log(success.data);
+	      },function(error){});
+	   }
+		$scope.testa=function(){
+              $http({
+                method:'post',
+                url:'http://127.0.0.3/Appapi/Deal/deal',
+                timeout:3000,
+                params:{url:'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data,'setheader':$scope.header2}
+              }).then(function(success){
+				  console.log(success.data);
+                //var doc = (new DOMParser()).parseFromString(success.data,'text/xml');
+                //console.log(xmlToJson(doc))
+                //$scope.loginObj = xmlToJson(doc).GNNT.REP.RESULT;
+                //$scope.loginState = $scope.loginObj.RETCODE['#text'];
+                //rootScope.currentAccount =$scope.account;
+                //if($scope.loginState<0){
+                //alertMsg("用户不存在或密码错误")
+                //console.log($scope.loginObj)
+                //}else{
+                //rootScope.tradeExchangeList.push({"key":$scope.jycode,"retcode":$scope.loginObj.RETCODE['#text'],"module_id":$scope.loginObj.MODULE_ID['#text'],"userid":$scope.loginObj.USERID['#text']})
+                //$scope.userNum = $scope.loginObj.USERID['#text'];
+                //$scope.currentRet = $scope.loginObj.RETCODE['#text'];
+                //console.log(rootScope.tradeExchangeList)
+                //rootScope.showhold = true;
+                //firm_info($scope.exchangeUrl,$scope.loginState,$scope.loginObj.USERID['#text']);
+                //getMid($scope.exchangeUrl,$scope.loginState,$scope.loginObj.USERID['#text']);
+                //setTimeout(query_position($scope.exchangeUrl,$scope.loginState,$scope.loginObj.USERID['#text']),1000)
+                //}
+              },function(error){
+                console.log('请求失败，请重试');
+            });
+    }
+$scope.testa();
 	})
   </script>
  </body>

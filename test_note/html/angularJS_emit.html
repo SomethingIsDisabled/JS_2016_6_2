@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="../js/angular.min.js"></script>
+ </head>
+ <body>
+  <div ng-app="M1">
+    <div ng-controller="C1"></div>
+  </div>
+
+  <script>
+    var app=angular.module("M1",[]);
+	app.controller("C1",function($scope,$http){
+	  $scope.yibu=function(string,ccc){
+        $scope.result="111";
+	    $http({
+		  url:"http://127.0.0.3/Appapi/Post/getGuandianList",
+          method:"post",
+		  params:{"item":0},
+		  timeout:3000
+		}).then(function(success){
+			//console.log(success.data);
+		  $scope.result=success.data.result;
+		  ccc=success.data.result;
+		  console.log("success",new Date().getTime());
+		  $scope.$emit(string);
+		  
+		},function(error){console.log("擦",error)});
+		return ccc;//执行比返回快，所以没有值
+		//$scope.$on("step1",function(){
+			//console.log("on",new Date().getTime());
+	        //return $scope.result;
+	    //});
+	  }
+      console.log($scope.yibu("step1"));//完成比异步返回快，所以没有值
+      console.log($scope.yibu("step2"));//完成比异步返回快，所以没有值
+      $scope.$on("step1",function(){
+	    console.log("step1 finished");
+		console.log($scope.result);//这里有值
+	  })
+
+
+
+
+	});
+
+  </script>
+ </body>
+</html>

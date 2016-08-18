@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<script src="../js/jquery-1.11.3.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div style="padding: 30px 300px 10px;" id = "content">
+    <h2>正则表达式测试</h2>
+    <br />
+    <form class="bs-example bs-example-form" role="form">
+        <div class="row">
+            <div class="col-lg-9">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="name">源文本</label>
+                        <textarea class="form-control" rows="9" id = "textContent"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-9">
+                <label for="name">正则表达式</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id = "regularExpression" >
+                   <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" onclick = "detectionRegularity()" >
+                          检测
+                      </button>
+                   </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
+
+        <br />
+        <div class="row">
+            <div class="col-lg-9">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="name">正则结果</label>
+                        <textarea class="form-control" rows="3" id = "regexResult"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    //检测正则
+    function detectionRegularity(){
+        var regularExpression = $("#regularExpression").val();
+        var textContent = $("#textContent").val();
+        $.ajax({
+            url: 'http://127.0.0.4/JS_2016_6_2/test_note/php/testRegular.php',
+            type:'post',
+            dataType:'json',
+            data:{
+                'regularExpression':regularExpression,
+                'textContent':textContent
+            },
+            success:function(data){
+                var showContent = "";
+                for(var eachItem in data){
+                    showContent += data[eachItem] + "\n";
+                }
+                $("#regexResult").html(showContent);
+            },
+            error:function(){
+                $("#regexResult").html("无结果");
+            }
+        });
+    }
+</script>
+</body>
+</html>
