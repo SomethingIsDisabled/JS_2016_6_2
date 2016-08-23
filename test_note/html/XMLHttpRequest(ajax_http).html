@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>XMLHttpRequest(ajax_http请求)</title>
+ </head>
+ <body>
+  <script>
+    var xhr=new XMLHttpRequest();  //创建对象
+    xhr.open("GET","sfsfsf");xhr.send();
+
+
+  </script>
+
+
+  <script>
+  //示例：
+//ajax({
+//  url: "./TestXHR.aspx",              //请求地址
+//  type: "POST",                       //请求方式
+//  data: { name: "super", age: 20 },        //请求参数
+//  dataType: "json",
+//  success: function (response, xml) {
+//    // 此处放成功后执行的代码
+//  },
+//  fail: function (status) {
+//    // 此处放失败后执行的代码
+//  }
+//});
+
+//ajax请求
+function myAjax(options){
+  //参数控制
+  options=options||{};
+  options.type=(options.type||"GET").toUpperCase();
+  options.dataType=options.dataType||"json";
+  var params=formatParams(options.data);
+  //var params=options.data;
+ //格式化参数
+  function formatParams(data) {
+      var arr = [];
+      for (var name in data) {
+        arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+      }
+      arr.push(("v=wz0.1").replace(".", ""));
+      return arr.join("&");
+  }
+  //创建XMLHttpRequest对象
+  var xhr;
+  if(window.XMLHttpRequest){
+    xhr=new XMLHttpRequest();
+    if(xhr.overrideMimeType){
+      xhr.overrideMimeType("text/xml");
+    }
+  }else if(window.ActiveXObject){
+    var activeName=["MSXML2.XMLHTTP","Microsoft.XMLHTTP"];
+    for(var i=0;i<activeName.length;i++){
+      try{
+        xhr=new ActiveXObject(activeName[i]);
+        break;
+      }catch(e){console.log(e);}
+    }
+  }else{console.log("XMLHttpRequest对象创建失败！！");}
+  if(xhr.timeout){xhr.timeout=3000;}
+  //接收请求头并保留
+  //function setLocaluserHeader(){
+  //  try {var my_Cookie = xhr.getResponseHeader("S_Cookie");}catch(e){/*console.log(e.message)*/}
+  //  console.log("my_Cookie:"+my_Cookie/*,"All:"+xhr.getAllResponseHeaders()*/);
+  //  if(navigator.cookieEnabled) {
+  //    var now = new Date();
+  //    now.setDate(now.getDate() + 7);//有效期7天
+  //    document.cookie = "my_Cookie=" + my_Cookie + ";expires=" + now.toGMTString() + "; path=/";
+  //  }else if(localStorage){
+  //    localStorage.setItem("my_Cookie",my_Cookie);
+  //  }
+  //}
+  //接收
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4){
+      var status=xhr.status;
+      if (status >= 200 && status < 300) {
+        //setLocaluserHeader();
+        options.success && options.success(xhr.responseText, xhr.responseXML);
+          !options.success && console.log("没有设置处理数据正确返回的方法");
+        } else {
+          options.fail && options.fail(status);
+          !options.fail && console.log("没有设置处理数据返回失败的处理方法！");
+      }
+    }
+  };
+  //读取并设置请求头
+  //function getUserHeader(){
+  //   if(navigator.cookieEnabled) {
+  //    var cookies = document.cookie.split("; ");
+  //      for (var i = 0; i < cookies.length; i++) {
+  //        var kv = cookies[i].split("=");
+  //        cookies[kv[0]] = kv[1];
+  //      }
+  //     xhr.setRequestHeader("my_Cookie",cookies["my_Cookie"]);
+  //    }else if(localStorage&&localStorage.getItem('my_Cookie')) {
+  //       xhr.setRequestHeader("my_Cookie", window.localStorage.getItem('my_Cookie') != null ? window.localStorage.getItem('my_Cookie') : '');
+  //     }
+  //}
+  //连接和发送
+  if (options.type == "GET") {
+    xhr.open("GET", options.url + "?" + params, true);
+    //getUserHeader();
+    xhr.send(null);
+  } else if (options.type == "POST") {
+    xhr.open("POST", options.url, true);
+    //POST方法需要设置表单提交时的内容类型
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //请求头必须设置在open之后，send之前
+    //getUserHeader();
+    if(xhr.ontimeout)xhr.ontimeout=function(){alert("请求超时。")};
+    xhr.send(params);
+  }
+
+//解决缓存的转换
+//   var url=window.location.href.substring(window.location.href);
+//  if(url.indexOf("?")>=0){
+//    url=url + "&t=" + (new Date()).valueOf();
+//  }else{
+//    url=url+"?+="+(new Date()).valueOf();
+//  }
+
+  //解决跨域的问题
+//                    if(url.indexOf("http://")>=0){
+//                        url.replace("?","&");
+//                        url="Proxy?url=" +url;
+//                    }
+}
+  </script>
+ </body>
+</html>

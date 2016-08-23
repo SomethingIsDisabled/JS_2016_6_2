@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>jquery_each_for</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+ </head>
+ <body>
+    <div>
+	  <table border="3">
+	  <thead>
+	    <th>1/1</th>
+	    <th>1/2</th>
+	    <th>1/3</th>
+	    <th>1/4</th>
+	    <th>1/5</th>
+	  </thead>
+	  <tbody id="tbody">
+	  
+	  </tbody>
+	  </table>
+	</div>
+
+  <script>
+    var arr1=[11,22,33,44,55];
+    var obj1={"一":1,"二":2,"三":3,"四":4,"五":5};
+	//c1,c2被当作参数传入p1,p2
+	$.each(arr1,function(p1,p2){
+	  console.log(this);//值
+	  console.log(p1,p2);
+	},["c1","c2"]);
+	//obj的键,值被传入p1,p2
+	$.each(obj1,function(p1,p2){
+	  console.log(this);//值
+	  console.log(p1,p2);
+	});
+	$.each(arr1,function(a){
+	  console.log(a);//这个是键
+	})
+	//each的退出
+	$.each(arr1,function(i,v1){
+	  $.each(obj1,function(j,v2){
+		if(v2==1){return true}//跳过了本次循环
+		console.log(j,v2);
+	    return false;//跳出了内层循环
+	  });
+	  console.log(i,v1);
+	})
+	//操作元素
+    $.each(obj1,function(a,b){
+	  $("<tr>").appendTo($("#tbody"))
+	  $('<td>',{
+	    "class":"ccc",
+		"text":a
+	  }).appendTo($("#tbody tr"))
+	  console.log($('<td>',{
+	    "class":"ccc",
+		"text":a
+	  }))
+	})
+  </script>
+ </body>
+</html>

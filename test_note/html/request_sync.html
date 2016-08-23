@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>sync</title>
+ </head>
+ <body>
+  <script>
+  //同步请求函数
+    function sendData1(url,xml){
+        //console.log(url,xml)
+        var successdata;
+        var jysend = new JYXMLHttpRequest();
+        jysend.send('POST', "http://120.26.225.31/Appapi/deal/deal","url="+url+"&data="+xml+"&setheader="+rootScope.jycookie,function(callbackFunc){
+            //console.log(callbackFunc)
+            if(callbackFunc.indexOf("Set-Cookie:")!=-1){
+                rootScope.setcookie = findCookie(callbackFunc);
+                rootScope.jycookie = '["Cookie:'+rootScope.setcookie+'"]'
+            }else{
+                rootScope.jycookie=  '["Cookie:'+rootScope.setcookie+'"]';
+            }
+            successdata = callbackFunc;
+            var xmldata = strslice(successdata,false);
+            var Doc = (new DOMParser()).parseFromString(xmldata, 'text/xml');
+            $scope.state =  xmlToJson(Doc).GNNT.REP.RESULT.RETCODE['#text'];
+            if($scope.state == -201){
+                alertMsg("身份不合法请重新登陆");
+                rootScope.showhold = false;
+                rootScope.ret = '';
+                rootScope.setcookie = '';
+                rootScope.jycookie=  '["Cookie:'+rootScope.setcookie+'"]';
+                rootScope.tradeExchangeList = [];
+                if( window.localStorage.getItem("acc")==undefined){
+                    $scope.rememberAcc = false;
+                }else{
+                    $scope.rememberAcc = true;
+                    $scope.account = window.localStorage.getItem("acc");
+                }
+                //$scope.$digest();
+                return;
+            }else if($scope.state == -9999){
+                alertMsg("请求过频，请稍候再试");
+                rootScope.showhold = false;
+                rootScope.ret = '';
+                rootScope.setcookie = '';
+                rootScope.jycookie=  '["Cookie:'+rootScope.setcookie+'"]';
+                rootScope.tradeExchangeList = [];
+                if( window.localStorage.getItem("acc")==undefined){
+                    $scope.rememberAcc = false;
+                }else{
+                    $scope.rememberAcc = true;
+                    $scope.account = window.localStorage.getItem("acc");
+                }
+                //$scope.$digest();
+                return;
+            }
+        },function(errorcallbackFunc){
+            console.log(errorcallbackFunc)
+        })
+        //console.log(successdata)
+        return(successdata);
+    }
+
+  </script>
+ </body>
+</html>

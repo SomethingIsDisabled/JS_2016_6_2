@@ -6,13 +6,20 @@
   <script src="../js/angular.min.js"></script>
  </head>
  <body ng-app="M1">
-  <div ng-controller="C1"></div>
+  <div ng-controller="C1">
+    <button type="button" ng-click="login()">登陆请求</button>
+    <button type="button" ng-click="testa()">请求时间</button>
+    <button type="button">登陆请求</button>
+    <button type="button">登陆请求</button>
+    <button type="button">登陆请求</button>
+  </div>
 
 
 
   <script>
     var app=angular.module('M1',[]);
 	app.controller('C1',function($scope,$http){
+	  //数据设置
 	  $scope.a1="ccc";
 	  $scope.data= '<?xml version="1.0" encoding="gb2312" ?>'+
     '<GNNT>'+
@@ -42,7 +49,11 @@
 	  $scope.header["Cookie"]="424324";
 	  $scope.header["mycookie"]="dewjdhwe";
 	  $scope.header2='["Cookie:424324","mycookie:dewjdhwe"]';
-	  console.log($scope.header,$scope.header2);
+	  $scope.header3="['Cookie: JSESSIONID=14264B3D77AC1E4F8DB9A7FC8D762C7E']";
+	  
+	  console.log($scope.header,$scope.header2,$scope.header3);
+
+	  //登陆
        $scope.login = function(){
         var loginXml = '<?xml version="1.0" encoding="gb2312" ?>'+
             '<GNNT>'+
@@ -61,14 +72,17 @@
 		    params:{'url':'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data}
 	      }).then(function(success){
 	        console.log(success.data);
-	      },function(error){});
+	      },function(error){console.log("登陆错误")});
 	   }
+
+	   //时间
 		$scope.testa=function(){
               $http({
                 method:'post',
                 url:'http://127.0.0.3/Appapi/Deal/deal',
                 timeout:3000,
-                params:{url:'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data,'setheader':$scope.header2}
+                params:{url:'http://221.203.22.70:16895/issue_tradeweb/httpXmlServlet','data':$scope.data2,'setheader':$scope.header3}
+				//params:{url:'http://127.0.0.1','data':$scope.data2,'setheader':$scope.header3}
               }).then(function(success){
 				  console.log(success.data);
                 //var doc = (new DOMParser()).parseFromString(success.data,'text/xml');
@@ -93,7 +107,7 @@
                 console.log('请求失败，请重试');
             });
     }
-$scope.testa();
+
 	})
   </script>
  </body>
