@@ -6,8 +6,61 @@
  </head>
  <body>
   <script>
-    var xhr=new XMLHttpRequest();  //创建对象
-    xhr.open("GET","sfsfsf");xhr.send();
+    function testAjax(options){
+		//设置默认参数
+	  options=options||{};
+      options.type=(options.type||"GET").toUpperCase();
+      options.dataType=options.dataType||"json";
+	  //level 2 api
+	  xhr.timeout=3000;
+	  xhr.ontimeout=function(event){alert("请求超时")}
+
+	  //var params=options.data;
+        //格式化参数
+      function formatParams(data) {
+        var arr = [];
+        for (var name in data) {
+          arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+        }
+        arr.push(("v=wz0.1").replace(".", ""));
+        return arr.join("&");
+      }
+
+	  var xhr=new XMLHttpRequest();  //创建对象
+	  //连接和发送
+      if (options.type == "GET") {
+        xhr.open("GET", options.url + "?" + params, true);
+        //getUserHeader();
+        xhr.send(null);
+      } else if (options.type == "POST") {
+        xhr.open("POST", options.url, true);
+        //POST方法需要设置表单提交时的内容类型
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        //请求头必须设置在open之后，send之前
+        //getUserHeader();
+        if(xhr.ontimeout)xhr.ontimeout=function(){alert("请求超时。")};
+		//level 2 api 跨域设置
+        xhr.withCredentials=true; //这个放在xhr.open后面执行，否则有些浏览器部分版本会异常，导致设置无效。
+		xhr.onload=function(){
+		  console.log(xhr.response);
+		}
+		xhr.onerror=function(){
+		  console.log("error making the request.");
+		}
+        //后台需要设置需要配置参数：Access-Control-Allow-Credentials:true
+        xhr.send(params);
+      }
+      xhr.onreadystatechange=function(){
+	    if(xhr.readyState==4&&xhr.status==200){
+		  console.log(xhr.responseText);
+		}else{
+		  console.log(xhr.statusText);
+		}
+	  }
+      
+
+	}
+    
 
 
   </script>
@@ -29,7 +82,7 @@
 //});
 
 //ajax请求
-function myAjax(options){
+function toolAjax(options){
   //参数控制
   options=options||{};
   options.type=(options.type||"GET").toUpperCase();

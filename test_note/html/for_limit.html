@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>for_limit_num</title>
+ </head>
+ <body>
+  <script>
+    var all=10;
+	var limit=3;
+	var finish=0;
+	var finished=0
+	function fun(i){
+	  setTimeout(function(){
+		  finish++;
+		  console.log(i,finish); //由于判断的当时finish还没没有被++所以会超限制执行,所以判断条件可以添加索引来返回正确的队列数字
+		  if((finish+i+1)<all){
+            fun(i);
+	      }
+	  },1000);
+	}
+	for(var i=0;i<3;i++){
+	  fun(i);
+	}
+	//finished变量变化测试
+	function fun2(i){
+		console.log("do");
+	  if(finished+1>0){console.log("if do")}
+	}
+	fun2(finished+1);
+	console.log("finished",finished);
+	//函数参数变化(作为参数传入的变量并不会影响外部)
+	function add(i){
+			i++;
+			console.log("fi",i);
+		}
+	function changeI(){
+	  for(var i=0;i<5;i++){
+	    add(i);
+		console.log("i",i);
+	  }
+	}
+	changeI();
+  </script>
+ </body>
+</html>
