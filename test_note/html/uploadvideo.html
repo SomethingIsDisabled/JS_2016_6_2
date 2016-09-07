@@ -1,0 +1,527 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>文件上传</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+<!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+<script src="../js/jquery-1.11.3.js"></script>
+<script src="../js/layer.js"></script>
+
+<style>.table th, .table td {
+  text-align: center;
+}</style>
+</head>
+<body>
+<div class="container">
+  <ol class="breadcrumb" style="background: transparent;">
+    <li class="active"><a href="/">首页</a></li>
+    <li>个人中心</li>
+    <li>上传视频</li>
+  </ol>
+  <div class="tableBox">
+    <table class="container table table-hover table-responsive">
+      <thead>
+      <tr>
+        <th style="text-align:left;"><input type="checkbox" id="checkAll"
+                                            style="vertical-align: top;cursor:pointer"/><label for="checkAll"
+                                                                                               style="cursor:pointer;margin:0;">全选</label>
+        </th>
+        <th>文件名</th>
+        <th>大小</th>
+        <th>状态</th>
+        <th>进度</th>
+        <th>速度</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody style="display:none" id="videoList">
+      <!--<tr>-->
+      <!--<td><input type="checkbox" class="checkbox" checked="checked" /></td>-->
+      <!--<td><span>这是文件名</span></td>-->
+      <!--<td><span>999.888M</span></td>-->
+      <!--<td><span>等待上传</span></td>-->
+      <!--<td>0.000000kb</td>-->
+      <!--<td><select name="allKindsOf"></select></td>-->
+      <!--<td><span style="color:red;cursor:pointer" onclick="return del('您确定要删除吗？');">删除</span><span style="display:none">'+v.id+'</span></td>-->
+      <!--</tr>-->
+      <!--<tr>-->
+      <!--<td><input type="checkbox" class="checkbox" checked="checked" /></td>-->
+      <!--<td><span>这是文件名</span></td>-->
+      <!--<td><span>999.888M</span></td>-->
+      <!--<td><span>等待上传</span></td>-->
+      <!--<td>0.000000kb</td>-->
+      <!--<td><select name="allKindsOf"></select></td>-->
+      <!--<td><span style="color:red;cursor:pointer" onclick="return del('您确定要删除吗？');">删除</span><span style="display:none">'+v.id+'</span></td>-->
+      <!--</tr>-->
+      </tbody>
+    </table>
+  </div>
+
+  <div style="display:none;" id="fileList">
+    <input type="file" style="display:none" id="file0" name="file" multiple="multiple"/>
+  </div>
+  <div class="container" style="text-align:center;margin:50px 0;" id="uploadInfo">
+    <button type="button" id="infoBtn" class="btn btn-large btn-info" style="font-size:55px;font-weight:bold">上传视屏
+    </button>
+    <div style="background-color:#EFAC3E;color:#fff;text-align: left;padding:25px 2%;margin-top:25px;">
+      <p>1、由于网络等原因，可能出现视频上传失败，请选中上传失败的视频,然后点击开始上传按钮重新上传；</p>
+      <p>2、上传文件最大支持1G；</p>
+      <p>3、支持绝大多数 视频文件格式，包括：.wmv/.wm/.dat/.asf//微软格式.rm/.rmvb/.ram//Real格式.mpg/.mpeg//MPEG格式 .mp4
+        /.mov/.m4v/.mkv/.flv/.vob/.qt/.divx/.cpk/.fli/.flc/.mod/.dvix/.dv/.ts//其他格式</p>
+    </div>
+  </div>
+  <div id="tFoot" class="">
+    <div style="overflow:hidden;float:left;margin-left:8px;display:none;">
+      <input type="checkbox" id="agree" checked="checked" disabled/><label for="agree">&nbsp;我同意 <a
+      href="http://help.lecloud.com/Wiki.jsp?page=Protocol">云视屏上传协议</a></label>
+    </div>
+
+    <div style="overflow:hidden;float:right">
+      <button type="button" style="float:right;margin-left:5px;" class="btn btn-warning btn-large" id="startUpload"
+              disabled>开始上传
+      </button>
+      <button type="button" style="float:right;margin-left:5px;" class="btn btn-info btn-large" id="addFile">添加视屏
+      </button>
+      <button type="button" style="float:right;margin-left:5px;display:none" class="btn btn-warning clearFinished"
+              onclick="clearFinished()">清除完成
+      </button>
+      <div style="overflow:hidden;float:right;padding:6px;">
+        <span style="display:inline-block;margin-right:5px;">同时上传</span>
+        <select name="upNumOnce" id="upNumOnce" style="float:right">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+      <span style="display:inline-block;padding:6px 0;float:right" id="videoCount">选中:0 </span>
+    </div>
+  </div>
+
+</div>
+</body>
+
+
+<script>
+  var ajaxUrl="{:U('__URL__','','')}";
+  var maxFileSize = 1024 * 1024 * 1024;  //文件最大1G
+  var inputNum = 0;  //拼接inputID
+  var listArr = [];  //记录视屏索引位置
+  var finished = 0;  //记录上传完成数量
+  var currentAjax = [];  //记录ajax请求标记
+  var successCount=0,failCount=0; //数量统计
+  //判断上传任务完成
+  function isCompleted() {
+    for (var i = 0; i < currentAjax.length; i++) {
+      if (currentAjax[i]) {
+        return false
+      }
+    }
+    finished = 0;
+    return true;
+  }
+  //取消上传
+  function cancelUp(e) {
+    e = e || window.event;
+    var btn = $(e.target);
+    var index = btn.next().text();
+    if (index&&currentAjax[index]!=null) {
+      currentAjax[index].abort();
+      btn.addClass("hidden").next().next().removeClass("hidden").parent().prev().prev().children(".upProgress").css("background", "red");
+      btn.parent().prev().html("0K/s").prev().prev().css("color", "red").html("上传停止");
+      btn.parent().parent().children().eq(0).children().eq(0).prop("disabled", false);
+      isCheckAll();
+    } else {
+      return false
+    }
+  }
+  //视屏格式
+  var typeStr = ".wmv,.wm,.avi,.dat,.asf,.rm,.rmvb,.ram,.mpg,.mpeg,.mp4,.mov,.m4v,.mkv,.flv,.vob,.qt,.divx,.cpk,.fli,.flc.,mod,.dvix,.dv,.ts";
+  $("#file0").attr("accept", typeStr);
+  //统计数量
+  function vCount() {
+    var videoCount = 0;
+    $.each(listArr, function (i, v1) {
+      $.each(listArr[i], function (j, v2) {
+        $.each($("#videoList").children(), function (k, v3) {
+          var t = $("#videoList tr:nth-child(" + (k + 1) + ") span:last").text().split(",");
+          if (t[0] == i && t[1] == j && $("#videoList .checkbox").eq(k).prop("checked") == true)videoCount++;
+        })
+      })
+    });
+    $("#videoCount").html("选中:" + videoCount);
+    return videoCount;
+  }
+  //连接file控件
+  function lineFile() {
+    $("#file" + inputNum).click();
+  }
+  $("#infoBtn").click(lineFile);
+  $("#addFile").click(lineFile);
+
+  //验证视屏格式
+  function valType(arr) {
+    var reg = eval("/(" + typeStr.split(",").join("|").replace(/\./g, "\\.") + ")$/i");
+    var val = true;
+    $.each(arr, function (i, v) {
+      if (!reg.test(v.name)) {
+        layer.msg('不支持此视屏格式', {icon: 2});
+        val = false;
+        return false
+      } else {
+        return false;
+      }
+    });
+    return val;
+  }
+  //验证视屏大小
+  function valSize(arr){
+    var tooBig=false;
+    $.each(arr,function(i,v){
+      if(v.size>maxFileSize){
+        layer.msg('有视屏过大',{icon:5});
+        tooBig=true;
+        return false;
+      }
+    });
+    return tooBig;
+  }
+  //验证文件同名
+  function hasSameName() {
+    var same = false;
+    $.each($("#file" + inputNum).get(0).files, function (i, v1) {
+      $.each($(".videoName"), function (j, v2) {
+        v2 = $(v2);
+        same = v2.text() == v1.name;
+        if (same) {
+          return false
+        }
+      });
+      if (same) {
+        return false
+      }
+    });
+    return same;
+  }
+  //生成file控件
+  function addInput() {
+    $("#fileList").append('<input type="file" style="display:none" id="file' + inputNum + '" name="file" multiple="multiple" accept="' + typeStr + '"/>');
+  }
+  //重置file控件
+  function resetInput() {
+    $("#fileList").html('<input type="file" style="display:none" id="file' + inputNum + '" name="file" multiple="multiple" accept="' + typeStr + '"/>');
+  }
+  //生成预览列表
+  $("#fileList").change(function () {
+    listArr[inputNum] = [];
+    var fileArr = $("#file" + inputNum).get(0).files;
+    if (!valType(fileArr)) {
+      resetInput();
+      return false
+    }
+    if(valSize(fileArr)){
+      resetInput();
+      return false
+    }
+    if (hasSameName()) {
+      layer.msg('选择的文件已存在', {icon: 2});
+      $("#file" + inputNum).remove();
+      addInput();
+      return false
+    }
+    $.each(fileArr, function (i, v) {
+      $("#videoList").append('<tr style="display:none">'
+        + '<td><input type="checkbox" class="checkbox" checked="checked" /></td>'
+        + '<td><span class="videoName">' + v.name + '</span></td>'
+        + '<td><span>' + (v.size / 1024 / 1024).toFixed(2) + 'M</span></td>'
+        + '<td class="uploadStatus">等待上传</td>'
+        + '<td style="position:relative"><div class="upProgress" style="height:20px;background:green;position:absolute;left:0;top:8px;z-index:10;opacity:0.3;"></div><span>0%</span></td>'
+        + '<td class="upSpeed">0K/s</td>'
+        + '<td><button type="button" class="btn btn-danger btn-sm cancel hidden" onclick="cancelUp()">取消</button><span class="count hidden"></span><span style="color:red;cursor:pointer" onclick="return del(\'您确定要删除吗？\');">删除</span><span class="listIndex hidden">' + inputNum + ',' + i + '</span></td>'
+        + '</tr>');
+      listArr[inputNum].push(i);
+    });
+    //生成file控件
+    ++inputNum;
+    addInput();
+    $("#videoList tr:hidden").fadeIn(500);
+    $("#uploadInfo").fadeOut(500,function(){
+      $(".tableBox").css("min-height", "250px");
+      $("#videoList").fadeIn(500,"linear");
+      isCheckAll();
+      $("#startUpload").prop("disabled", false);
+    });
+  });
+  //服务器续传定时器
+  function progressTime(i) {
+    return setInterval(function () {
+      var add = parseFloat(Math.random().toFixed(2));
+      var width = $(".upProgress").eq(i).prop("style").width;
+      width = width ? width : 0;
+      if (parseFloat(width) < 99.99) {
+        width = (parseFloat(width) + add).toFixed(2) + "%";
+      } else {
+        width = "99.99%";
+      }
+      $(".upProgress").eq(i).prop("style").width = width;
+      $(".upProgress").eq(i).next().html(width);
+    }, 1000);
+  }
+  //ajax预上传视屏
+  $(function () {
+    $("#startUpload").click(function () {
+      if (!isCompleted()) {
+        layer.alert('已有上传任务,请稍后...', {
+          icon: 5,
+          skin: 'layer-ext-moon'
+        });
+        return false;
+      }
+      var all = vCount();
+      var limit = $("#upNumOnce").val();
+      var countArr = []; //用于计算第一次上传数
+      //获取勾选文件索引，生成data
+      $.each($("#videoList").children(), function (i, v) {
+        if (countArr.length >= limit) {
+          return false
+        }
+        if ($("#videoList .checkbox").eq(i).is(':checked')) {
+          countArr.push(countArr.length);
+          upload(i, all, countArr);
+        }
+      })
+    })
+  });
+  //ajax上传方法
+  function upload(i, all, countArr, currentAjaxIndex) {
+    while (!$("#videoList .checkbox").eq(i).is(':checked') && i < $("#videoList .checkbox").length) {
+      i++
+    }
+    var timer;
+    var startTime=(new Date()).getTime();
+    var tempTime=0,tempSize=0;
+    //上传开始样式控制
+    $("#videoList .checkbox").eq(i).prop("checked", false).prop("disabled", true).parent().next().next().next().css("color", "#000").text("正在上传");
+    $("#startUpload").prop("disabled", true);
+    $(".upProgress").eq(i).css("background", "green");
+    $(".cancel").eq(i).removeClass("hidden").next().next().addClass("hidden");
+    $("#videoList .count").eq(i).text(currentAjaxIndex||countArr.length);
+    var index = $("#videoList .listIndex").eq(i).text().split(",");
+    var formData = new FormData();
+    var fileData = $("#file" + index[0]).get(0).files[index[1] >>> 0];
+    formData.append("file", fileData);
+    currentAjaxIndex = currentAjaxIndex ? currentAjaxIndex : countArr.length;
+    //失败函数
+    function errorFun() {
+      $(".upProgress").eq(i).css("background", "red");
+      $(".uploadStatus").eq(i).css("color", "red").html("上传失败");
+      $(".checkbox").eq(i).prop("disabled", false);
+      $(".count").eq(i).prev().addClass("hidden").next().next().removeClass("hidden");
+      isCheckAll();
+      if (finished + countArr.length <= all) {
+        upload(i + 1, all, countArr, currentAjaxIndex)
+      } else {
+        currentAjax[currentAjaxIndex] = null
+      }
+    }
+    currentAjax[currentAjaxIndex]=$.ajax({
+      type: "post",
+      url:ajaxUrl+"/uploadvideo",
+      cache: false,
+      data: formData,
+      processData: false,
+      contentType: false,
+      xhr: function () {
+//        var xhr = new window.XMLHttpRequest();
+        var xhr = $.ajaxSettings.xhr();
+        //Upload progress
+        xhr.upload.addEventListener("progress", function (evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = evt.loaded / evt.total;
+            if(((new Date()).getTime()-(tempTime||startTime))>2000){
+              tempTime=(new Date()).getTime();
+              tempSize=evt.loaded;
+            }
+            var rate = (evt.loaded-tempSize)/(((new Date()).getTime()-(tempTime||startTime))/1000);
+            rate = rate / 1024;
+            rate = rate > 1024 ? (((rate / 1024 * 10) >> 0) / 10).toFixed(1) + "M/s" : (((rate * 10) >> 0) / 10).toFixed(1) + "K/s";
+            //Do something with upload progress
+            $(".upProgress").eq(i).css("width", (percentComplete * 100).toFixed(2) + "%");
+            if (percentComplete < 1) {
+              $(".upProgress").eq(i).next().html((percentComplete * 100).toFixed(2) + "%");
+              $(".upSpeed").eq(i).html(rate);
+            } else {
+              $(".upProgress").eq(i).next().html("99.99%").parent().prev().css("color", "green").html("正在处理");
+              $(".cancel").eq(i).addClass("hidden").next().next().removeClass("hidden");
+              $(".upSpeed").eq(i).html("0K/s");
+            }
+          } else {
+            timer=progressTime(i)
+          }
+        }, false);
+        return xhr;
+      },
+      success: function (data) {
+        finished++;
+        var currentAjaxIndex = $("#videoList .count").eq(i).text();
+        $("#videoList .count").eq(i).text("");
+        clearInterval(timer);
+        if (data.code != 0) {
+          failCount++;
+          errorFun()
+        }
+        if (data.code==0) {
+          successCount++;
+          $(".upProgress").eq(i).css("width", "100%");
+          $(".upProgress").eq(i).next().html("100%").parent().prev().css("color", "green").html("上传完成");
+          $(".cancel").eq(i).addClass("hidden").next().next().removeClass("hidden");
+          $(".clearFinished").show(800);
+          if (finished + countArr.length <= all) {
+            upload(i + 1, all, countArr)
+          } else {
+            currentAjax[currentAjaxIndex] = null;
+          }
+        }
+        if (isCompleted()) {
+          layer.confirm("完成！本次上传:<br>总数:" + all + "个，成功:" + successCount + "个，失败:" + failCount + "个。", {
+            btn: ['完成', '继续'] //按钮
+          }, function () {
+            $(window).unbind('beforeunload');
+            location.href = "/account/uploadvideo"
+          }, function () {
+
+          });
+          successCount=0;failCount=0;
+        }
+      },
+      error: function (error) {
+        console.log(error);
+        clearInterval(timer);
+        finished++;
+        failCount++;
+        currentAjaxIndex = $(".count").eq(i).text();
+        $(".count").eq(i).text("");
+        currentAjax[currentAjaxIndex] = null;
+        if (error.statusText == "abort" && finished + countArr.length <= all) {
+          upload(i + 1, all, countArr, currentAjaxIndex);
+        }else if (error.statusText == "error"||error.code != 0) {
+          errorFun();
+        }
+        if (isCompleted()) {
+          layer.alert("上传总数:" + all + "个，成功:"+successCount+"个，失败:"+failCount+"个，请检查网络是否稳定", {icon: 5});
+          successCount=0;failCount=0;
+        }
+      }
+    });
+  }
+  //清除完成
+  function clearFinished() {
+    $.each($(".uploadStatus"), function (i, v) {
+      v = $(v);
+      if (v.text() == "上传完成") {
+        v.parent().remove();
+        $(".clearFinished").hide(800);
+      }
+    })
+  }
+  //全选框
+  $("#checkAll").click(function () {
+    if ($(this).is(':checked')) {
+      $(".checkbox").each(function (i, v) {
+        v = $(v);
+        if (!v.is(":disabled")) {
+          v.prop("checked", true)
+        }
+      });
+      $("#startUpload").prop("disabled", false);
+    } else {
+      $(".checkbox").prop("checked", false);
+      $("#startUpload").prop("disabled", true);
+    }
+    vCount();
+  });
+  //判断是否全选
+  function isCheckAll() {
+    $.each($(".checkbox"), function (i, v) {
+      v = $(v);
+      if (!v.is(":disabled") && !v.is(":checked")) {
+        $("#checkAll").prop("checked", false);
+        return false
+      }
+      $("#checkAll").prop("checked", true);
+    });
+    //判断是否未选
+    $.each($(".checkbox"), function (i, v) {
+      v = $(v);
+      if (v.is(":checked")) {
+        $("#startUpload").prop("disabled", false);
+        return false
+      }
+      $("#startUpload").prop("disabled", true);
+    });
+    vCount();
+  }
+  //控制全选checkbox和上传按钮是否可用
+  $(document).ready(function () {
+    $(document).on("click", ".checkbox", function () {
+      isCheckAll();
+    })
+  });
+
+  //删除确认
+  function del(msg, e) {
+    e = e || window.event;
+    var el = e.target;
+    layer.confirm(msg, {
+      btn: ['确定', '取消'] //按钮
+    }, function () {
+      var t = $(el).next().text().split(",");
+      $(el).parent().parent().fadeOut(500,function(){
+        $(el).parent().parent().remove();
+      });
+      delete listArr[t[0]][t[1]];
+      var hasIndex;
+      for (var i = 0; i < inputNum; i++) {
+        if ($(".listIndex").length) {
+          $.each($(".listIndex"), function (j, v) {
+            var currentIndex = v.innerHTML.split(",");
+            if (currentIndex[0] == i) {
+              hasIndex = true;
+              return false
+            }
+            if (j == ($(".listIndex").length - 1)) {
+              $("#file" + i).length && $("#file" + i).remove();
+            }
+          });
+        } else {
+          hasIndex = false;
+          //重置控件、计数器和列表数组
+          inputNum = 0;
+          listArr = [];
+          resetInput();
+          $("#startUpload").prop("disabled", true);
+          break
+        }
+      }
+      vCount();
+      layer.msg('删除完成', {icon: 1, time: 800});
+      return true
+    }, function () {
+      return false;
+    });
+  }
+
+  //页面刷新、关闭提醒
+  $($(window).bind('beforeunload', function(){
+    // 只有在标识变量is_confirm不为false时，才弹出确认提示
+    if($("#uploadInfo").is(":hidden")){
+      return "离开页面将导致数据丢失！";
+    }
+  }));
+
+</script>
+</html>

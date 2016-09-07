@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>JS获取IP</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+ </head>
+ <body>
+  <script language="JavaScript"> 
+  //IE获取ip方法
+  function GetLocalIPAddr(){ 
+	  var oSetting = null; 
+	  var ip = null; 
+	  try{ 
+		  oSetting = new ActiveXObject("rcbdyctl.Setting"); 
+		  ip = oSetting.GetIPAddress; 
+		  if (ip.length == 0){ return "没有连接到Internet"; } 
+		  oSetting = null; 
+		  }catch(e){ 
+			  return ip; 
+			} 
+		  return ip; 
+		} 
+	document.write(GetLocalIPAddr()+"<br/>") 
+  </script> 
+<script src="http://pv.sohu.com/cityjson?ie=utf-8"></script>  
+ <script type="text/javascript">  
+ document.write(returnCitySN["cip"]+','+returnCitySN["cname"])  
+ var localIP=returnCitySN["cip"];
+ console.log(localIP);
+ </script>
+ </body>
+</html>
