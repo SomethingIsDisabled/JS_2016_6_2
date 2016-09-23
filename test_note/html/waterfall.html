@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>瀑布流分发尝试</title>
+  <script src="../js/jquery-1.11.3.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+  <style>
+    .col{
+    min-height:2px;
+    width:24%;
+    float:left;
+    margin:50px 1%;
+	outline:1px solid green;
+    }
+    #waterFall{
+      overflow:hidden;
+      padding-bottom:15px;
+    }
+	@media screen and (max-width:767px){
+    .col{
+      min-height:2px;
+      width:48%;
+      margin:25px 1%;
+    }
+    .col:nth-child(3){display:none}
+    .col:nth-child(4){display:none}
+    }
+    @media screen and (min-width:768px) and (max-width:991px){
+    .col{
+      min-height:2px;
+      width:32%;
+      margin:25px 0 0 1%;
+    }
+    .videoName{font-size:25px;}
+    .col:nth-child(4){display:none}
+    }
+    @media screen and (min-width:992px){
+    .col{
+      min-height:2px;
+      width:24%;
+      margin:25px 0 0 1%;
+    }
+    .videoName{font-size:28px;}
+    }
+  </style>
+ </head>
+ <body>
+ <div class="">
+    <div id="waterFall">
+      <div class="col">1</div>
+      <div class="col">2</div>
+      <div class="col">3</div>
+      <div class="col">4</div>
+    </div>
+  </div>
+ </body>
+ <script>
+ //瀑布流列计数
+  function colCount() {
+    var count=0;
+    $(".col").each(function (i, v) {
+      v = $(v);
+      if (v.is(":visible"))count++;
+    });
+    return count
+  }
+  //计算列高度
+  function getColHeight(){
+	var heightArr=[];
+	var count=colCount();
+    for(var i=0;i<count;i++){
+	  heightArr[i]=parseInt($('.col').eq(i).css("height"));
+	}
+	return heightArr;
+  }
+  //data
+  var data=[1,2,3,4,5,6,7,8,9];
+  //添加元素
+  function addVideoBoxes(data){
+    data=data||"";
+	var count=colCount();
+    $.each(data,function(i,v){
+      if(i<count){
+       $(".col").eq((i)%colNum).append(createVideoBox(v))
+	  }else{
+	    var arr=getColHeight();
+	    
+	      var maxi=arr.indexOf(Math.max.apply(Math, arr));
+	      var mini=arr.indexOf(Math.min.apply(Math, arr));
+	      console.log("max",maxi,"min",mini,arr);
+		  $(".col").eq(mini).append(createVideoBox(v));
+	    
+	  }
+    })
+  }
+  //创建元素
+  function createVideoBox(opt){
+	opt=opt||"";
+    var div=$('<div></div>');
+	var height=parseInt(Math.random()*(100-20+1)+20)+'px';
+	div.css('height',height);
+	div.css('background','#1a7bb9');
+	div.css('margin-top',10);
+	opt&&div.html(opt);
+	return div;
+  }
+    createVideoBox();
+    //触发瀑布流
+  var colNum=colCount();
+  $(function(){addVideoBoxes(data)});
+  $(window).resize(function(){
+    if(colCount()!=colNum){
+      colNum=colCount();
+      $(".col").html("");
+      addVideoBoxes(data)
+    }
+  });
+
+ </script>
+</html>

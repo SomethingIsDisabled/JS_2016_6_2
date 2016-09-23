@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>float——bug</title>
+ </head>
+ <style>
+   *{border:1px solid black}
+   #box{
+    height:500px;
+   }
+   p,ul{float:left;width:300px;}
+   #box>div{float:right}
+ </style>
+ <body>
+  <div id="box">
+    <p>这里是一个P</p>
+	<ul>
+	  <li>li1</li>
+	  <li>li2</li>
+	  <li>li3</li>
+	  <li>li4</li>
+	</ul>
+	<div>这是里div</div>
+  </div>
+ </body>
+</html>
